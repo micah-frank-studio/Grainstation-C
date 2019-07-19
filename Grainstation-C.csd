@@ -1,18 +1,19 @@
 /*	
-	Grainstation C
+	Grainstation C - Granular Live Performance Workstation
 	by Micah Frank 2018
 	www.micahfrank.com
-	https://github.com/chronopolis5k		
+	https://github.com/chronopolis5k	
+	
+	Special thanks to 	Iain McCurdy, Rory Walsh and the rest of the Csound community
 */
 
 <CsoundSynthesizer>
 <CsOptions>
-; Select audio/midi flags here according to platform
-;-odac     ;;;RT audio out
+
 -Ma ;enable all MIDI devices
 ;-B512 -b128 ; hardware and software buffer default (-B512 -b128)
 ;-iadc    ;;;uncomment -iadc if RT audio input is needed too
-; For Non-realtime ouput leave only the line below:
+;-n -d -+rtmidi=NULL -M0 -m0d
 </CsOptions>
 <CsInstruments>
 sr = 48000
@@ -24,7 +25,8 @@ nchnls = 2
 Sfile1 = "sounds/Ecology1.aif"
 Sfile2 = "sounds/Yellowstone_Geyser1.aif"
 Sfile3 = "sounds/Beethoven3rd_Seg5.aif" 
-Sfile4 = "sounds/Woodstock_Ice.aif"	
+Sfile4 = "sounds/Woodstock_Ice.aif"
+gSIRfile = "sounds/IR_StNicolaesChurch.wav" ; Reverb IR file	
 ;Sfile5 = "sounds/"
 ;Sfile6 = "sounds/"
 ;Sfile7 = "sounds/"
@@ -188,7 +190,6 @@ gistates[7] = 7
 gistates[8] = 8
 girec[] fillarray 89, 90, 91, 92			;record button note numbers
 
-
 gioldnote init 0
 
 gictrl_morphamt = 22
@@ -198,7 +199,7 @@ gkpos = 300
 ;snapshots and morph state
 gisnpset [] init 9
 gimorphon[] init 9
-gidefault[] init 9
+giselected[] init 9
 
 giplayback[] fillarray 0, 0, 0, 0
 gkLoopDuration[]	init 4
@@ -213,17 +214,40 @@ opcode modinit, k, iiiiik
 	kchanged changed gkpos
 	if gksnapmode == 1 && kchanged == 1 then ;on snapshot (instr 2), get current value of all controls
 		kov[gkpos] = kcontrol
-		printks2 "snapshot recorded. saved position w %f \n", kov[gkpos]
+		;printks2 "snapshot recorded. saved position w %f \n", kov[gkpos]
+	elseif gksnapmode == 1 then ;on morph assign snapshot to morph fader
+		knv = kov[gkpos]
+		kcontrol = knv+((kcontrol-knv)*kmorph)
+		;printks2 "morph is on toward position %f \n", knv
+	elseif gksnapmode == 0 && kchanged == 1 then								;else assign morph to default values
+		kdft =  (imax+imin)*idefault 						;get real default value	
+		kcontrol = kdft+((kcontrol-kdft)*kmorph)
+	printks2 "default is on w %f \n", kcontrol
+	endif
+	xout kcontrol
+	
+	/*
+	
+	ichannel, icontrol, idefault, imin, imax, kmorph xin
+	initc7	ichannel, icontrol, idefault 
+	idft =  (imax+imin)*idefault 						;get real default value	
+	kcontrol	ctrl7	ichannel, icontrol, imin, imax
+	kov[] init 9
+	kchanged changed gkpos
+	if gksnapmode == 1 && kchanged == 1 then ;on snapshot (instr 2), get current value of all controls
+		kov[gkpos] = kcontrol
+		;printks2 "snapshot recorded. saved position w %f \n", kov[gkpos]
 	elseif gkmorphmode == 1 then ;on morph assign snapshot to morph fader
 		knv = kov[gkpos]
 		kcontrol = knv+((kcontrol-knv)*kmorph)
 		;printks2 "morph is on toward position %f \n", knv
 	elseif gksnapmode == 0 && gkmorphmode == 0 then								;else assign morph to default values
-		idft =  (imax+imin)*idefault 						;get real default value	
-		kcontrol = idft+((kcontrol-idft)*kmorph)
-	;printks2 "default is on w %f \n", kcontrol
+		kdft =  (imax+imin)*idefault 						;get real default value	
+		kcontrol = kdft+((kcontrol-kdft)*kmorph)
+	printks2 "default is on w %f \n", kcontrol
 	endif
 	xout kcontrol
+	*/
 	
 	endop
 opcode pitchdelay, aa, aaiii ;audio in / audio out, delay time, feedback, delay mix, pitchShift
@@ -596,53 +620,50 @@ endin
 
 instr snapshotControl, 2
 
-;initialize controller
-
-noteoff 2, gistates[1], 0
-noteoff 2, gistates[2], 0
-noteoff 2, gistates[3], 0
-noteoff 2, gistates[4], 0
-noteoff 2, gistates[5], 0
-noteoff 2, gistates[6], 0
-noteoff 2, gistates[7], 0
-noteoff 2, gistates[8], 0
-noteoff 3, girec[0], 0 
-noteoff 3, girec[1], 0 
-noteoff 3, girec[2], 0 
-noteoff 3, girec[3], 0 
-
+iprevPos = i(gkpos) ;remember previously selected snapshot
+	
 	; SNAPSHOT AND MORPHING SWITCHES
 inote notnum
 if inote != 0 then
-	if gimorphon[inote] == 0 && gisnpset[inote]==0 && gidefault[inote]==0 then		; go to snapshot 
+	if gisnpset[inote]==0 && giselected[inote]==0 then		; go to snapshot 
 			gksnapmode = 1
-			gkmorphmode = 0
+			;gkmorphmode = 0
 			gisnpset[inote] = 1
-			gidefault[inote] = 1
+			giselected[inote] = 1
 			gkpos = inote 	
-			noteon gichan2, inote, 127
-			prints "green light on \n"	
-	elseif gimorphon[inote]==0 && gisnpset[inote]==1 && gidefault[inote]==1 then ; go to morph
+			noteon gichan2, inote, 75
+			if iprevPos != inote then
+				giselected[iprevPos] = 0
+				noteon gichan2, iprevPos, 60 ;turn prev selected snapshot to green
+			endif
+			prints "Snapshot Recorded \n"
+	elseif gisnpset[inote]==1 && giselected[inote]==0 then ; go to saved snapshot
 			gksnapmode = 0
-			gkmorphmode = 1
-			gimorphon[inote] = 1
-			gimorphon[gioldnote] = 0
-			gisnpset[inote] = 0
-			gisnpset[gioldnote] = 1
+			;gkmorphmode = 1
+			;gimorphon[inote] = 1
+			;gimorphon[gioldnote] = 0
+			giselected[inote]=1
+			;gisnpset[inote] = 0
+			;gisnpset[gioldnote] = 1
 			gkpos = inote
-			noteon gichan2, inote, 75						;turn on red light on active
-			noteon gichan2, gioldnote, 127		;turn old morph note back to green
-			gioldnote = inote
-			prints "red light on \n"
-	elseif gimorphon[inote]==1 && gisnpset[inote]==0 && gidefault[inote]==1	then		; go to off state
-			gkmorphmode = 0
+			noteon gichan2, inote, 75 ;red light
+			if iprevPos != inote && gisnpset[iprevPos] == 1 then
+				noteon gichan2, iprevPos, 60 ;green light
+				giselected[iprevPos]=0
+			endif
+			;gioldnote = inote
+			prints "Previous Snapshot Selected\n"
+	elseif gisnpset[inote]==1 	&& giselected[inote]==1 then		; go to off state
+			gisnpset[inote] = 0
 			gksnapmode = 0
-			gidefault[inote] = 0
-			gimorphon[inote] = 0
+			giselected[inote] = 0
+			;kmorphmode = 0
+			;gimorphon[inote] = 0
 			noteoff gichan2, inote, 0	
-			gioldnote = 0
-			prints "all lights off \n"	
+			prints "Reset Snapshot\n"	
 	endif
+	print gisnpset[inote]
+	print giselected[inote]
 endif
 
 endin
@@ -691,13 +712,28 @@ instr reverb, 98
 ainL chnget "verbmixL"
 ainR chnget "verbmixR"
 ain = ainL + ainR
-aRevL, aRevR pconvolve ain,"../soundbits/ir/IR_StNicolaesChurch.wav" 
+aRevL, aRevR pconvolve ain, gSIRfile 
 chnmix aRevL, "mixL"
 chnmix aRevR, "mixR"
 ;outs aRevL, aRevR
 endin
 
 instr Mixer, 99
+
+;initialize controller
+noteoff 2, gistates[1], 0
+noteoff 2, gistates[2], 0
+noteoff 2, gistates[3], 0
+noteoff 2, gistates[4], 0
+noteoff 2, gistates[5], 0
+noteoff 2, gistates[6], 0
+noteoff 2, gistates[7], 0
+noteoff 2, gistates[8], 0
+noteoff 3, girec[0], 0 
+noteoff 3, girec[1], 0 
+noteoff 3, girec[2], 0 
+noteoff 3, girec[3], 0 
+
 	;initc7	gichan1, gictrl_record, 0.0	
 	;ktrig	ctrl7	gichan1, gictrl_record, 0.0, 1
 	amixL chnget "mixL"
@@ -769,6 +805,25 @@ e
   <g>255</g>
   <b>255</b>
  </bgcolor>
+ <bsbObject type="BSBButton" version="2">
+  <objectName>button0</objectName>
+  <x>43</x>
+  <y>67</y>
+  <width>100</width>
+  <height>30</height>
+  <uuid>{47824a64-9e54-4545-8631-e8a85f302609}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <type>event</type>
+  <pressedValue>1.00000000</pressedValue>
+  <stringvalue/>
+  <text>button0</text>
+  <image>/</image>
+  <eventLine>i1 0 10</eventLine>
+  <latch>false</latch>
+  <latched>false</latched>
+ </bsbObject>
 </bsbPanel>
 <bsbPresets>
 </bsbPresets>
