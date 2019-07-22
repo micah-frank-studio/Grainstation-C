@@ -205,24 +205,28 @@ giplayback[] fillarray 0, 0, 0, 0
 gkLoopDuration[]	init 4
 gitablelength = ftlen(giRecBuf[0])
 	
-opcode modinit, k, iiiiik
+opcode modinit, k, iiiiik ;records all controller information and stores only changed values to position (array).
 	ichannel, icontrol, idefault, imin, imax, kmorph xin
-	initc7	ichannel, icontrol, idefault 
+	initc7	ichannel, icontrol, idefault ;initialize controller values 
 	idft =  (imax+imin)*idefault 						;get real default value	
-	kcontrol	ctrl7	ichannel, icontrol, imin, imax
-	kov[] init 9
-	kchanged changed gkpos
-	if gksnapmode == 1 && kchanged == 1 then ;on snapshot (instr 2), get current value of all controls
+	kcontrol	ctrl7	ichannel, icontrol, imin, imax ;get current controller value
+	kov[] init 9 ;create array for current values (to become old values) 
+	kchanged changed gkpos ; has the snapshopt position changed?
+	if gksnapmode == 1 && kchanged==1 then ;on snapshot (instr 2), write current value of all changed controls
 		kov[gkpos] = kcontrol
-		;printks2 "snapshot recorded. saved position w %f \n", kov[gkpos]
-	elseif gksnapmode == 1 then ;on morph assign snapshot to morph fader
+		printks "Snapshot created \n", 0.1
+	elseif gksnapmode == 1 && kchanged==0 then ;after snapshot is set, allow morph
 		knv = kov[gkpos]
 		kcontrol = knv+((kcontrol-knv)*kmorph)
-		;printks2 "morph is on toward position %f \n", knv
-	elseif gksnapmode == 0 && kchanged == 1 then								;else assign morph to default values
+		prints "Snapshot restored"
+		;printk2 knv
+	elseif gksnapmode == 2 then
+		knv = kov[gkpos]
+		kcontrol = knv+((kcontrol-knv)*kmorph)
+	elseif gksnapmode == 0 && kchanged == 0 then								;else assign morph to default values
 		kdft =  (imax+imin)*idefault 						;get real default value	
 		kcontrol = kdft+((kcontrol-kdft)*kmorph)
-	printks2 "default is on w %f \n", kcontrol
+	printks "Snapshot cleared \n", 0.1
 	endif
 	xout kcontrol
 	
@@ -627,7 +631,6 @@ inote notnum
 if inote != 0 then
 	if gisnpset[inote]==0 && giselected[inote]==0 then		; go to snapshot 
 			gksnapmode = 1
-			;gkmorphmode = 0
 			gisnpset[inote] = 1
 			giselected[inote] = 1
 			gkpos = inote 	
@@ -636,34 +639,23 @@ if inote != 0 then
 				giselected[iprevPos] = 0
 				noteon gichan2, iprevPos, 60 ;turn prev selected snapshot to green
 			endif
-			prints "Snapshot Recorded \n"
 	elseif gisnpset[inote]==1 && giselected[inote]==0 then ; go to saved snapshot
-			gksnapmode = 0
-			;gkmorphmode = 1
-			;gimorphon[inote] = 1
-			;gimorphon[gioldnote] = 0
+			gksnapmode = 2
 			giselected[inote]=1
-			;gisnpset[inote] = 0
-			;gisnpset[gioldnote] = 1
 			gkpos = inote
 			noteon gichan2, inote, 75 ;red light
 			if iprevPos != inote && gisnpset[iprevPos] == 1 then
 				noteon gichan2, iprevPos, 60 ;green light
 				giselected[iprevPos]=0
 			endif
-			;gioldnote = inote
-			prints "Previous Snapshot Selected\n"
 	elseif gisnpset[inote]==1 	&& giselected[inote]==1 then		; go to off state
 			gisnpset[inote] = 0
 			gksnapmode = 0
 			giselected[inote] = 0
-			;kmorphmode = 0
-			;gimorphon[inote] = 0
+			gkpos = 0
 			noteoff gichan2, inote, 0	
 			prints "Reset Snapshot\n"	
 	endif
-	print gisnpset[inote]
-	print giselected[inote]
 endif
 
 endin
