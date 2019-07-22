@@ -1,9 +1,3 @@
-Grainstation-C is a granular audio processing workstation. It has multiple tracks of granular sound file processing and live input sound mangling capabilities.
-
-It has been programmed to respond to a Novation Launch Control XL with the User Templates included in the repository.
+Grainstation-C is an open-source, granular performance workstation designed to build realtime, evolving sound sculptures. It seamlessly integrates with a Novation LaunchControl XL (easily modifiable for any other controller) and can processes 4 disk tracks and 3 live input streams. You can save any state as a snapshot and morph to that snapshot at any point in a performance. It has 6 independent pitch delay lines, 6 switchable low pass and high pass filters, live audio looping and multiple granular processing controls including granular time-stretching, frame animation and granular pitch shifting.
 
 Grainstation-C was originally inspired by the Make Noise System Concrete but shortly took on many unique characteristics of its own. http://www.makenoisemusic.com/synthesizers/system-concrete
-
-It can create 8 independent settings snapshots and morph controls (fader 8 on the Launch Control XL) between snapshots.
-
-It has 6 independent pitch delay lines, 6 switchable low pass and high pass filters, live audio looping and multiple granular processing controls including granular timestretching and pitch shifting.
