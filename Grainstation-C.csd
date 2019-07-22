@@ -230,29 +230,6 @@ opcode modinit, k, iiiiik ;records all controller information and stores only ch
 	endif
 	xout kcontrol
 	
-	/*
-	
-	ichannel, icontrol, idefault, imin, imax, kmorph xin
-	initc7	ichannel, icontrol, idefault 
-	idft =  (imax+imin)*idefault 						;get real default value	
-	kcontrol	ctrl7	ichannel, icontrol, imin, imax
-	kov[] init 9
-	kchanged changed gkpos
-	if gksnapmode == 1 && kchanged == 1 then ;on snapshot (instr 2), get current value of all controls
-		kov[gkpos] = kcontrol
-		;printks2 "snapshot recorded. saved position w %f \n", kov[gkpos]
-	elseif gkmorphmode == 1 then ;on morph assign snapshot to morph fader
-		knv = kov[gkpos]
-		kcontrol = knv+((kcontrol-knv)*kmorph)
-		;printks2 "morph is on toward position %f \n", knv
-	elseif gksnapmode == 0 && gkmorphmode == 0 then								;else assign morph to default values
-		kdft =  (imax+imin)*idefault 						;get real default value	
-		kcontrol = kdft+((kcontrol-kdft)*kmorph)
-	printks2 "default is on w %f \n", kcontrol
-	endif
-	xout kcontrol
-	*/
-	
 	endop
 opcode pitchdelay, aa, aaiii ;audio in / audio out, delay time, feedback, delay mix, pitchShift
 	ainL, ainR, idelay_time, ifdbk, ipshift xin
@@ -797,7 +774,7 @@ e
   <g>255</g>
   <b>255</b>
  </bgcolor>
- <bsbObject type="BSBButton" version="2">
+ <bsbObject version="2" type="BSBButton">
   <objectName>button0</objectName>
   <x>43</x>
   <y>67</y>
