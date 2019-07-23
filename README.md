@@ -11,7 +11,7 @@ Grainstation-C is an open-source, granular performance workstation designed to b
 Grainstation-C was originally inspired by the Make Noise System Concrete but shortly took on many unique characteristics of its own. http://www.makenoisemusic.com/synthesizers/system-concrete
 
 I used it on my latest album [Quetico](https://micahfrank.bandcamp.com/album/quetico) extensively to process field recordings and create walls of textures. I very happy happy to now offer it to the public!
-<img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/sounds/Micah-Frank_Quetico_Front.jpg">
+
 **Controller**
 
 Grainstation-C has been developed to integrate with the Novation Launch Control XL Mark2. However, any other controller should work as well. The MIDI note and controller mapping schema is written at the end of this page.
