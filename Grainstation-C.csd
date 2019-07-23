@@ -21,16 +21,16 @@ ksmps = 32
 nchnls = 2
 0dbfs  = 1
 
-; Path to sound files
-Sfile1 = "sounds/Ecology1.aif"
-Sfile2 = "sounds/Yellowstone_Geyser1.aif"
-Sfile3 = "sounds/Beethoven3rd_Seg5.aif" 
+;;Path to sound files
+Sfile1 = "sounds/Maine_Shore.aif"
+Sfile2 = "sounds/Violin_BowBounce.aif"
+Sfile3 = "sounds/Rhodezart.aif" 
 Sfile4 = "sounds/Woodstock_Ice.aif"
 gSIRfile = "sounds/IR_StNicolaesChurch.wav" ; Reverb IR file	
 ;Sfile5 = "sounds/"
 ;Sfile6 = "sounds/"
 ;Sfile7 = "sounds/"
-;Sfile8 = ".sounds/"
+;Sfile8 = "sounds/"
 
 ginput = 1 			;INPUT CHANNEL NUMBER
 
@@ -221,7 +221,7 @@ opcode modinit, k, iiiiik ;records all controller information and stores only ch
 		prints "Snapshot restored"
 		;printk2 knv
 	elseif gksnapmode == 2 then
-		knv = kov[gkpos]
+		knv = kov[gkpos]  
 		kcontrol = knv+((kcontrol-knv)*kmorph)
 	elseif gksnapmode == 0 && kchanged == 0 then								;else assign morph to default values
 		kdft =  (imax+imin)*idefault 						;get real default value	
@@ -299,13 +299,13 @@ kmorphspd	ctrl7	gichan1, gictrl_morphspd, 0.25, .003 ;min 4 sec, max 5 minutes l
 ;volume faders
 ilevdft = 0.0
 klev[] init 8
-klev[0] modinit 1, gictrl_lev1, ilevdft, 0, 0.7, kmorph
-klev[1] modinit 1, gictrl_lev2, ilevdft, 0, 0.7, kmorph
-klev[2] modinit 1, gictrl_lev3, ilevdft, 0, 0.7, kmorph
-klev[3] modinit 1, gictrl_lev4, ilevdft, 0, 0.7, kmorph
-klev[4] modinit 1, gictrl_lev5, ilevdft, 0, 0.7, kmorph
-klev[5] modinit 1, gictrl_lev6, ilevdft, 0, 0.7, kmorph
-klev[6] modinit 1, gictrl_lev7, ilevdft, 0, 0.7, kmorph
+klev[0] modinit 1, gictrl_lev1, ilevdft, 0, 0.3, kmorph
+klev[1] modinit 1, gictrl_lev2, ilevdft, 0, 0.3, kmorph
+klev[2] modinit 1, gictrl_lev3, ilevdft, 0, 0.3, kmorph
+klev[3] modinit 1, gictrl_lev4, ilevdft, 0, 0.3, kmorph
+klev[4] modinit 1, gictrl_lev5, ilevdft, 0, 0.3, kmorph
+klev[5] modinit 1, gictrl_lev6, ilevdft, 0, 0.3, kmorph
+klev[6] modinit 1, gictrl_lev7, ilevdft, 0, 0.3, kmorph
 ;pitch
 ipitchdft = 0.53
 gkpitch[] init 8
