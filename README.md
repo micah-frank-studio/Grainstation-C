@@ -12,6 +12,10 @@ Grainstation-C was originally inspired by the Make Noise System Concrete but sho
 
 I used it on my latest album [Quetico](https://micahfrank.bandcamp.com/album/quetico) extensively to process field recordings and create walls of textures. I very happy happy to now offer it to the public!
 
+Watch this [demo video](https://youtu.be/BQ5MSDqFaX8) to see what it can do!
+
+<a href="https://youtu.be/BQ5MSDqFaX8" target="_blank"><img src="http://img.youtube.com/vi/BQ5MSDqFaX8/0.jpg" alt="Grainstation-C Demo" width="240" height="180" border="0" /></a>
+
 **Controller**
 
 Grainstation-C has been developed to integrate with the Novation Launch Control XL Mark2. However, any other controller should work as well. The MIDI note and controller mapping schema is written at the end of this page.
