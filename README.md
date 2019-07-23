@@ -26,6 +26,4 @@ Download the Launch Control XL Mk2 software (for loading the templates): https:/
 
 You can render a file in real-time to the /renders folder simply by pressing the [Record Arm] button on the Launch Control XL. The button will begin to blink and your performance will be recorded. You can stop and restart recording as needed by pressing the button again.
 
-![alt text](https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page1.jpg "Launch Control Page 1")
-
-<img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page1.jpg" width="800" height="902">
+<img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page1.jpg" width="450" height="407">
