@@ -1,4 +1,4 @@
-#Grainstation-C
+# Grainstation-C
 
 Written by Micah Frank under GPLv3
 
@@ -25,6 +25,12 @@ Download the Launch Control XL Mk2 software (for loading the templates): https:/
 **Recording**
 
 You can render a file in real-time to the /renders folder simply by pressing the [Record Arm] button on the Launch Control XL. The button will begin to blink and your performance will be recorded. You can stop and restart recording as needed by pressing the button again.
+
+**Installation**
+
+Grainstation requires Csound: http://csound.com/download.html CsoundQT comes with Csound and will enable you to run Grainstation C.
+
+**Page Controls Overview**
 
 <img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page1.jpg" width="450" height="507">
 <img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page2.jpg" width="450" height="507">
