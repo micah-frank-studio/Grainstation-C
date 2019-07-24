@@ -34,6 +34,13 @@ gSIRfile = "sounds/IR_StNicolaesChurch.wav" ; Reverb IR file
 
 ginput = 1 			;INPUT CHANNEL NUMBER
 
+;;B-Format - Ambisonic encoding options
+
+giBEncode = 0 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
+giNSpeakers = 9 ;how many speakers?
+giNChannels = 8 ;how many channels are we using? (recommended, not to change this)
+
+
 ;INITIALIZE RECORD BUFFERS	
 giRecBuf[] init 4
 giRecBuf[0] ftgen	0,0,2^24,-7,0 ;about 5.8 minutes of recording per buffer
@@ -171,6 +178,26 @@ gictrl_verbSend5 = 14
 gictrl_verbSend6 = 17
 gictrl_verbSend7 = 20
 gictrl_verbSend8 = 23
+; azimuth
+gictrl_azi1 = 1
+gictrl_azi2 = 4
+gictrl_azi3 = 7
+gictrl_azi4 = 10
+gictrl_azi5 = 13
+gictrl_azi6 = 16
+gictrl_azi7 = 19
+gictrl_azi8 = 22
+
+;altitude
+gictrl_alt1 = 2
+gictrl_alt2 = 5
+gictrl_alt3 = 8
+gictrl_alt4 = 11
+gictrl_alt5 = 14
+gictrl_alt6 = 17
+gictrl_alt7 = 20
+gictrl_alt8 = 23
+
 ;record
 gictrl_record = 108 ;note C7 #108
 gictrl_kpitchMix = 38
@@ -274,10 +301,7 @@ opcode pitchdelay, aa, aaiii ;audio in / audio out, delay time, feedback, delay 
 	
 	xout amixL, amixR
 endop
-opcode lfobank, i, i ;;in progress
-ibank1 xin
-xout ibank1
-endop
+
 instr grainwave, 1
 
 ain inch ginput			; input channel
@@ -293,8 +317,6 @@ kmorphamt	ctrl7	gichan1, gictrl_morphamt, 0.01, 1
 
 initc7	gichan1, gictrl_morphspd, 0	
 kmorphspd	ctrl7	gichan1, gictrl_morphspd, 0.25, .003 ;min 4 sec, max 5 minutes lfo speed
-
-;kmorph = kmorph*kmorphlfo ; scale morph fader w morph lfo
 
 ;volume faders
 ilevdft = 0.0
@@ -392,14 +414,14 @@ kfiltFreq7 modinit 2, gictrl_filtFreq7, ifltfqdft, 200, 10000, kmorph
 kfiltFreq8 modinit 2, gictrl_filtFreq8, ifltfqdft, 200, 10000, kmorph
 ;Verb Send
 ivrbsnddft = 0.001
-kverbsend1 modinit 4, gictrl_verbSend1, ivrbsnddft, 0, 0.2, kmorph
-kverbsend2 modinit 4, gictrl_verbSend2, ivrbsnddft, 0, 0.2, kmorph
-kverbsend3 modinit 4, gictrl_verbSend3, ivrbsnddft, 0, 0.2, kmorph
-kverbsend4 modinit 4, gictrl_verbSend4, ivrbsnddft, 0, 0.2, kmorph
-kverbsend5 modinit 4, gictrl_verbSend5, ivrbsnddft, 0, 0.2, kmorph
-kverbsend6 modinit 4, gictrl_verbSend6, ivrbsnddft, 0, 0.2, kmorph
-kverbsend7 modinit 4, gictrl_verbSend7, ivrbsnddft, 0, 0.2, kmorph
-kverbsend8 modinit 4, gictrl_verbSend8, ivrbsnddft, 0, 0.2, kmorph
+kverbsend1 modinit 4, gictrl_verbSend1, ivrbsnddft, 0, 0.1, kmorph
+kverbsend2 modinit 4, gictrl_verbSend2, ivrbsnddft, 0, 0.1, kmorph
+kverbsend3 modinit 4, gictrl_verbSend3, ivrbsnddft, 0, 0.1, kmorph
+kverbsend4 modinit 4, gictrl_verbSend4, ivrbsnddft, 0, 0.1, kmorph
+kverbsend5 modinit 4, gictrl_verbSend5, ivrbsnddft, 0, 0.1, kmorph
+kverbsend6 modinit 4, gictrl_verbSend6, ivrbsnddft, 0, 0.1, kmorph
+kverbsend7 modinit 4, gictrl_verbSend7, ivrbsnddft, 0, 0.1, kmorph
+kverbsend8 modinit 4, gictrl_verbSend8, ivrbsnddft, 0, 0.1, kmorph
 ;Delay Send
 idlsnddft = 0.001
 kdelsend1 modinit 4, gictrl_delaySend1, idlsnddft, 0, 0.7, kmorph
@@ -410,7 +432,33 @@ kdelsend5 modinit 4, gictrl_delaySend5, idlsnddft, 0, 0.7, kmorph
 kdelsend6 modinit 4, gictrl_delaySend6, idlsnddft, 0, 0.7, kmorph
 kdelsend7 modinit 4, gictrl_delaySend7, idlsnddft, 0, 0.7, kmorph
 kdelsend8 modinit 4, gictrl_delaySend8, idlsnddft, 0, 0.7, kmorph		
-		
+
+; Azimuth
+
+iazidft = 0
+kalpha1 modinit 5, gictrl_azi1, iazidft, 0, 720, kmorph
+kalpha2 modinit 5, gictrl_azi2, iazidft, 0, 720, kmorph
+kalpha3 modinit 5, gictrl_azi3, iazidft, 0, 720, kmorph
+kalpha4 modinit 5, gictrl_azi4, iazidft, 0, 720, kmorph
+kalpha5 modinit 5, gictrl_azi5, iazidft, 0, 720, kmorph
+kalpha6 modinit 5, gictrl_azi6, iazidft, 0, 720, kmorph
+kalpha7 modinit 5, gictrl_azi7, iazidft, 0, 720, kmorph
+kalpha8 modinit 5, gictrl_azi8, iazidft, 0, 720, kmorph	
+
+; Altitude
+
+ialtdft = 0
+kbeta1 modinit 5, gictrl_alt1, ialtdft, 0, 720, kmorph
+kbeta2 modinit 5, gictrl_alt2, ialtdft, 0, 720, kmorph
+kbeta3 modinit 5, gictrl_alt3, ialtdft, 0, 720, kmorph
+kbeta4 modinit 5, gictrl_alt4, ialtdft, 0, 720, kmorph
+kbeta5 modinit 5, gictrl_alt5, ialtdft, 0, 720, kmorph
+kbeta6 modinit 5, gictrl_alt6, ialtdft, 0, 720, kmorph
+kbeta7 modinit 5, gictrl_alt7, ialtdft, 0, 720, kmorph
+kbeta8 modinit 5, gictrl_alt8, ialtdft, 0, 720, kmorph
+
+
+
 	
 	giL[] init 8 ;one alloc per channel/ftable
 	giR[] init 8
@@ -435,8 +483,6 @@ kdelsend8 modinit 4, gictrl_delaySend8, idlsnddft, 0, 0.7, kmorph
 	endif
   
   
-  ;	a1L diskgrain "soundwalks/soundwalk111618.wav", klev[0], kdens1, gkpitch[0], kgrsize1, ips*kstr1, 1, iolaps
-		;a1R diskgrain "soundwalks/soundwalk111618.wav", klev[0], kdens1, gkpitch[0], kgrsize1, ips*kstr1, 1, iolaps
   ;;load f-tables
   	a1L syncloop klev[0], kdens1, gkpitch[0], kgrsize1, ips*kstr1, 0, ftlen(giL[0])/sr, giL[0], 1, iolaps
 		a1R syncloop klev[0], kdens1, gkpitch[0], kgrsize1, ips*kstr1, 0, ftlen(giL[0])/sr, giR[0], 1, iolaps
@@ -529,10 +575,6 @@ kdelsend8 modinit 4, gictrl_delaySend8, idlsnddft, 0, 0.7, kmorph
   	adel5L, adel5R pitchdelay aFilt5[kfiltType5]*kdelsend5, aFilt5[kfiltType5]*kdelsend5, gictrl_delay_time5, gictrl_fdbk5, gictrl_delayPShift5
   	adel6L, adel6R pitchdelay aFilt6[kfiltType6]*kdelsend6, aFilt6[kfiltType6]*kdelsend6, gictrl_delay_time6, gictrl_fdbk6, gictrl_delayPShift6
   	adel7L, adel7R pitchdelay aFilt7[kfiltType7]*kdelsend7, aFilt7[kfiltType7]*kdelsend7, gictrl_delay_time7, gictrl_fdbk7, gictrl_delayPShift7
-  	;adel5L, adel5R pitchdelay aFilt5L[kfiltType5]*kdelsend5, aFilt5R[kfiltType5]*kdelsend5, gictrl_delay_time5, gictrl_fdbk5, gictrl_delayPShift5
-  ;	adel6L, adel6R pitchdelay aFilt6L[kfiltType6]*kdelsend6, aFilt6R[kfiltType6]*kdelsend6, gictrl_delay_time6, gictrl_fdbk6, gictrl_delayPShift6
-  ;	adel7L, adel7R pitchdelay aFilt7L[kfiltType7]*kdelsend7, aFilt7R[kfiltType7]*kdelsend7, gictrl_delay_time7, gictrl_fdbk7, gictrl_delayPShift7
-  ;	adel8L, adel8R pitchdelay aFilt8L[kfiltType8]*kdelsend8, aFilt8R[kfiltType8]*kdelsend8, gictrl_delay_time8, gictrl_fdbk8, gictrl_delayPShift8
   
     ;;mix  delay and dry (post filter) sigs
   	asig1L = adel1L*kdelsend1 + aFilt1L[kfiltType1]*(1-kdelsend1)
@@ -551,15 +593,6 @@ kdelsend8 modinit 4, gictrl_delaySend8, idlsnddft, 0, 0.7, kmorph
   	asig7R = adel7R*kdelsend7 + aFilt7[kfiltType7]*(1-kdelsend7)
   	
   	
-  	;asig5L = adel5L + aFilt5L[kfiltType5]
-  	;asig5R = adel5R + aFilt5R[kfiltType5]
-  	;asig6L = adel6L + aFilt6L[kfiltType6]
-  	;asig6R = adel6R + aFilt6R[kfiltType6]
-  ;	asig7L = adel7L + aFilt7L[kfiltType7]
-  ;	asig7R = adel7R + aFilt7R[kfiltType7]
-  	;asig8L = adel8L + aFilt8L[kfiltType8]
-  	;asig8R = adel8R + aFilt8R[kfiltType8]
-  	
   chnmix asig1L*kverbsend1, "verbmixL"
   chnmix asig1R*kverbsend1, "verbmixR"
   chnmix asig2L*kverbsend2, "verbmixL"
@@ -574,8 +607,6 @@ kdelsend8 modinit 4, gictrl_delaySend8, idlsnddft, 0, 0.7, kmorph
   chnmix asig6R*kverbsend6, "verbmixR"
   chnmix asig7L*kverbsend7, "verbmixL"
   chnmix asig7R*kverbsend7, "verbmixR"
-  ;chnmix asig8L*kverbsend8, "verbmixL"
-  ;chnmix asig8R*kverbsend8, "verbmixR"
   
   chnmix asig1L, "mixL"
   chnmix asig1R, "mixR"
@@ -592,11 +623,73 @@ kdelsend8 modinit 4, gictrl_delaySend8, idlsnddft, 0, 0.7, kmorph
   chnmix asig6R, "mixR"
   chnmix asig7L, "mixL"
   chnmix asig7R, "mixR"
-  ;chnmix asig8L, "mixL"
-  ;chnmix asig8R, "mixR"
-   
-  ;out ain ;monitor live input
-    
+  
+  ;; B-format encoding
+  
+  if giBEncode == 1 then
+  	aBenc1L[] init giNSpeakers
+  	aBenc1R[] init giNSpeakers
+  	aBenc2L[] init giNSpeakers
+  	aBenc2R[] init giNSpeakers
+  	aBenc3L[] init giNSpeakers
+  	aBenc3R[] init giNSpeakers
+  	aBenc4L[] init giNSpeakers
+  	aBenc4R[] init giNSpeakers
+  	aBenc5L[] init giNSpeakers
+  	aBenc5R[] init giNSpeakers
+  	aBenc6L[] init giNSpeakers
+  	aBenc6R[] init giNSpeakers
+  	aBenc7L[] init giNSpeakers
+  	aBenc7R[] init giNSpeakers
+  	 	
+  	aBenc1L bformenc1 asig1L, kalpha1, kbeta1
+  	aBenc1R bformenc1 asig1R, kalpha1, kbeta1
+  	
+  	aBenc2L bformenc1 asig2L, kalpha2, kbeta2
+  	aBenc2R bformenc1 asig2R, kalpha2, kbeta2
+  	
+  	aBenc3L bformenc1 asig3L, kalpha3, kbeta3
+  	aBenc3R bformenc1 asig3R, kalpha3, kbeta3
+  	
+  	aBenc4L bformenc1 asig4L, kalpha4, kbeta4
+  	aBenc4R bformenc1 asig4R, kalpha4, kbeta4
+  	
+  	aBenc5L bformenc1 asig5L, kalpha5, kbeta5
+  	aBenc5R bformenc1 asig5R, kalpha5, kbeta5
+  	
+  	aBenc6L bformenc1 asig6L, kalpha6, kbeta6
+  	aBenc6R bformenc1 asig6R, kalpha6, kbeta6
+  	
+  	aBenc7L bformenc1 asig7L, kalpha7, kbeta7
+  	aBenc7R bformenc1 asig7R, kalpha7, kbeta7
+  	  	
+  	ichncount init 0
+  		if ichncount < giNSpeakers then
+  			chnmix aBenc1L[ichncount], "benc1L"
+  			chnmix aBenc1R[ichncount], "benc1R"
+  			
+  			chnmix aBenc2L[ichncount], "benc2L"
+  			chnmix aBenc2R[ichncount], "benc2R"
+  			
+  			chnmix aBenc3L[ichncount], "benc3L"
+  			chnmix aBenc3R[ichncount], "benc3R"
+  			
+  			chnmix aBenc4L[ichncount], "benc4L"
+  			chnmix aBenc4R[ichncount], "benc4R"
+  			
+  			chnmix aBenc5L[ichncount], "benc5L"
+  			chnmix aBenc5R[ichncount], "benc5R"
+  			
+  			chnmix aBenc6L[ichncount], "benc6L"
+  			chnmix aBenc6R[ichncount], "benc6R"
+  			
+  			chnmix aBenc7L[ichncount], "benc7L"
+  			chnmix aBenc7R[ichncount], "benc7R"
+  		ichncount += 1
+  		endif
+ endif
+		
+
 endin
 
 instr snapshotControl, 2
@@ -703,16 +796,12 @@ noteoff 3, girec[1], 0
 noteoff 3, girec[2], 0 
 noteoff 3, girec[3], 0 
 
-	;initc7	gichan1, gictrl_record, 0.0	
-	;ktrig	ctrl7	gichan1, gictrl_record, 0.0, 1
+
 	amixL chnget "mixL"
 	amixR chnget "mixR"
 	kloopitch = 1
 	idur = 10
 	ifad = 5
-	
-	;aLoop1L, krec sndloop amixL, kloopitch, ktrig, idur, ifad 
-	;aLoop1R, krec sndloop amixR, kloopitch, ktrig, idur, ifad 
 	 
 	
 	;; if inote = 108 trigger instrument 100. on 2nd press turnoff
@@ -737,6 +826,22 @@ noteoff 3, girec[3], 0
 	chnclear "mixR"
 	chnclear "verbmixL"
 	chnclear "verbmixR"
+	
+	chnclear "benc1L"
+	chnclear "benc1R"
+	chnclear "benc2L"
+	chnclear "benc2R"
+	chnclear "benc3L"
+	chnclear "benc3R"
+	chnclear "benc4L"
+	chnclear "benc4R"
+	chnclear "benc5L"
+	chnclear "benc5R"
+	chnclear "benc6L"
+	chnclear "benc6R"
+	chnclear "benc7L"
+	chnclear "benc7R"
+
 endin 
 	
 instr Render, 100
@@ -748,6 +853,33 @@ instr Render, 100
 	Sfilename strcat Sdir,Sdate
 	Sfilename strcat  Sfilename, ".wav"  
 	fout Sfilename, 24, allL, allR ; create 24-bit .wav file in specified directory
+	
+	if giBEncode == 1 then
+	; bformat render 
+	abform[] init giNChannels
+ 
+	abform[0] = chnget:a("benc1L")
+	ab1R chnget "benc1R"
+	ab2L chnget "benc2L"
+	ab2R chnget "benc2R"
+	ab3L chnget "benc3L"
+	ab3R chnget "benc3R"
+	ab4L chnget "benc4L"
+	ab4R chnget "benc4R"
+	ab5L chnget "benc5L"
+	ab5R chnget "benc5R"
+	ab6L chnget "benc6L"
+	ab6R chnget "benc6R"
+	ab7L chnget "benc7L"
+	ab7R chnget "benc7R"
+	;abform [] fillarray ab1L, ab1R, ab2L, ab2R, ab3L, ab3R, ab4L, ab4R, ab5L, ab5R, ab6L, ab6R, ab7L, ab7R
+	
+	Sdir = "b_format/"
+	Sfilename strcat Sdir,Sdate
+	Sfilename strcat  Sfilename, ".wav"  
+	fout Sfilename, 24, abform ; create 24-bit .wav file in specified directory 
+	
+	endif
 endin
 </CsInstruments>
 <CsScore>
@@ -774,7 +906,7 @@ e
   <g>255</g>
   <b>255</b>
  </bgcolor>
- <bsbObject version="2" type="BSBButton">
+ <bsbObject type="BSBButton" version="2">
   <objectName>button0</objectName>
   <x>43</x>
   <y>67</y>
