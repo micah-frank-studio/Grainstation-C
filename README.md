@@ -6,7 +6,7 @@ Written by Micah Frank under GPLv3
 
 <http://micahfrank.bandcamp.com>
 
-Grainstation-C is an open-source, granular performance workstation designed to build realtime, evolving sound sculptures (with 3D - ambisonics B encoding!). It seamlessly integrates with a Novation LaunchControl XL Mark 2 (easily modifiable for any other controller) and can processes 4 disk tracks and 3 live input streams. You can save any state as a snapshot and morph to that snapshot at any point in a performance. It has 6 independent pitch delay lines, 6 switchable low pass and high pass filters, live audio looping and multiple granular processing controls including granular time-stretching, frame animation and granular pitch shifting.
+Grainstation-C is an open-source, granular performance workstation designed to build realtime, evolving sound sculptures with optional ambisonics. It seamlessly integrates with a Novation LaunchControl XL Mark 2 (easily modifiable for any other controller) and can processes 4 disk tracks and 3 live input streams. You can save any state as a snapshot and morph to that snapshot at any point in a performance. It has 6 independent pitch delay lines, 6 switchable low pass and high pass filters, live audio looping and multiple granular processing controls including granular time-stretching, frame animation and granular pitch shifting.
 
 Grainstation-C was originally inspired by the Make Noise System Concrete but shortly took on many unique characteristics of its own. http://www.makenoisemusic.com/synthesizers/system-concrete
 
@@ -36,6 +36,10 @@ Download the Launch Control XL Mk2 software (for loading the templates): https:/
 **Recording**
 
 You can render a file in real-time to the /renders folder simply by pressing the [Record Arm] button on the Launch Control XL. The button will begin to blink and your performance will be recorded. You can stop and restart recording as needed by pressing the button again.
+
+**Ambisonics**
+
+You can enable the ambisonics flag and immediately tweak the azimuth and altitude for any track. When you render the performance, a multichannel B-encoded file will also be rendered to the "b_format" folder.
 
 **Installation**
 
