@@ -30,6 +30,7 @@ This repository includes 4 template pages for the Novation Launch Control XL. To
 
 • Page 4 - Delay and Convolution Controls - delay send amount, convolution send amount
 
+• Page 5 - Ambisonics / Spatial Audio Controls - azimuth angle, altitude angle
 
 Download the Launch Control XL Mk2 software (for loading the templates): https://bit.ly/2y3rWul
 
@@ -51,3 +52,4 @@ Grainstation requires Csound: http://csound.com/download.html CsoundQT comes wit
 <img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page2.jpg" width="450" height="507">
 <img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page3.jpg" width="450" height="507">
 <img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page4.jpg" width="450" height="507">
+<img src= "https://github.com/chronopolis5k/Grainstation-C/blob/master/LaunchControl%20XL%20Templates/Page_Overviews/Page5.jpg" width="450" height="507">

@@ -36,9 +36,9 @@ ginput = 1 			;INPUT CHANNEL NUMBER
 
 ;;B-Format - Ambisonic encoding options
 
-giBEncode = 0 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
+giBEncode = 1 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
 giNSpeakers = 9 ;how many speakers?
-giNChannels = 8 ;how many channels are we using? (recommended, not to change this)
+giNChannels = 14 ;how many channels of audio are we using? (recommended, not to change this!)
 
 
 ;INITIALIZE RECORD BUFFERS	
@@ -241,11 +241,11 @@ opcode modinit, k, iiiiik ;records all controller information and stores only ch
 	kchanged changed gkpos ; has the snapshopt position changed?
 	if gksnapmode == 1 && kchanged==1 then ;on snapshot (instr 2), write current value of all changed controls
 		kov[gkpos] = kcontrol
-		printks "Snapshot created \n", 0.1
+		;printks "Snapshot created \n", 0.1
 	elseif gksnapmode == 1 && kchanged==0 then ;after snapshot is set, allow morph
 		knv = kov[gkpos]
 		kcontrol = knv+((kcontrol-knv)*kmorph)
-		prints "Snapshot restored"
+		;prints "Snapshot restored"
 		;printk2 knv
 	elseif gksnapmode == 2 then
 		knv = kov[gkpos]  
@@ -253,7 +253,7 @@ opcode modinit, k, iiiiik ;records all controller information and stores only ch
 	elseif gksnapmode == 0 && kchanged == 0 then								;else assign morph to default values
 		kdft =  (imax+imin)*idefault 						;get real default value	
 		kcontrol = kdft+((kcontrol-kdft)*kmorph)
-	printks "Snapshot cleared \n", 0.1
+	;printks "Snapshot cleared \n", 0.1
 	endif
 	xout kcontrol
 	
@@ -302,9 +302,34 @@ opcode pitchdelay, aa, aaiii ;audio in / audio out, delay time, feedback, delay 
 	xout amixL, amixR
 endop
 
+opcode mixencoded, 0, akk
+	;encoding opcode must read input stream, read azimuth and alt, encode, mix to channel 
+	ain, kalpha, kbeta xin
+	ipos init 0
+	abenc[] init giNSpeakers
+	abenc bformenc1 ain, kalpha, kbeta
+	/*mixbformat:	
+  		if ipos < giNSpeakers then
+  		SchannelName sprintf "benc%i", ipos
+			chnmix abenc[ipos], SchannelName
+			ipos +=1
+			goto mixbformat
+			endif
+			*/
+	chnmix abenc[0], "benc0"
+	chnmix abenc[1], "benc1"
+	chnmix abenc[2], "benc2" 
+	chnmix abenc[3], "benc3" 
+	chnmix abenc[4], "benc4" 
+	chnmix abenc[5], "benc5" 
+	chnmix abenc[6], "benc6" 
+	chnmix abenc[7], "benc7" 
+ 	
+endop
 instr grainwave, 1
 
 ain inch ginput			; input channel
+ichncount init 0
 
 ;modinit ichannel, icontrol, idefault, imin, imax
 ;;midi initializations
@@ -321,13 +346,13 @@ kmorphspd	ctrl7	gichan1, gictrl_morphspd, 0.25, .003 ;min 4 sec, max 5 minutes l
 ;volume faders
 ilevdft = 0.0
 klev[] init 8
-klev[0] modinit 1, gictrl_lev1, ilevdft, 0, 0.3, kmorph
-klev[1] modinit 1, gictrl_lev2, ilevdft, 0, 0.3, kmorph
-klev[2] modinit 1, gictrl_lev3, ilevdft, 0, 0.3, kmorph
-klev[3] modinit 1, gictrl_lev4, ilevdft, 0, 0.3, kmorph
-klev[4] modinit 1, gictrl_lev5, ilevdft, 0, 0.3, kmorph
-klev[5] modinit 1, gictrl_lev6, ilevdft, 0, 0.3, kmorph
-klev[6] modinit 1, gictrl_lev7, ilevdft, 0, 0.3, kmorph
+klev[0] modinit 1, gictrl_lev1, ilevdft, 0, 0.1, kmorph
+klev[1] modinit 1, gictrl_lev2, ilevdft, 0, 0.1, kmorph
+klev[2] modinit 1, gictrl_lev3, ilevdft, 0, 0.1, kmorph
+klev[3] modinit 1, gictrl_lev4, ilevdft, 0, 0.1, kmorph
+klev[4] modinit 1, gictrl_lev5, ilevdft, 0, 0.1, kmorph
+klev[5] modinit 1, gictrl_lev6, ilevdft, 0, 0.1, kmorph
+klev[6] modinit 1, gictrl_lev7, ilevdft, 0, 0.1, kmorph
 ;pitch
 ipitchdft = 0.53
 gkpitch[] init 8
@@ -624,71 +649,60 @@ kbeta8 modinit 5, gictrl_alt8, ialtdft, 0, 720, kmorph
   chnmix asig7L, "mixL"
   chnmix asig7R, "mixR"
   
-  ;; B-format encoding
+  ;;B-format encoding
   
   if giBEncode == 1 then
-  	aBenc1L[] init giNSpeakers
-  	aBenc1R[] init giNSpeakers
-  	aBenc2L[] init giNSpeakers
-  	aBenc2R[] init giNSpeakers
-  	aBenc3L[] init giNSpeakers
-  	aBenc3R[] init giNSpeakers
-  	aBenc4L[] init giNSpeakers
-  	aBenc4R[] init giNSpeakers
-  	aBenc5L[] init giNSpeakers
-  	aBenc5R[] init giNSpeakers
-  	aBenc6L[] init giNSpeakers
-  	aBenc6R[] init giNSpeakers
-  	aBenc7L[] init giNSpeakers
-  	aBenc7R[] init giNSpeakers
-  	 	
-  	aBenc1L bformenc1 asig1L, kalpha1, kbeta1
-  	aBenc1R bformenc1 asig1R, kalpha1, kbeta1
+  	ipos init 0
+  	mixencoded asig1L, kalpha1, kbeta1
+  	mixencoded asig1R, kalpha1, kbeta1
   	
-  	aBenc2L bformenc1 asig2L, kalpha2, kbeta2
-  	aBenc2R bformenc1 asig2R, kalpha2, kbeta2
+  	mixencoded asig2L, kalpha2, kbeta2
+  	mixencoded asig2R, kalpha2, kbeta2
   	
-  	aBenc3L bformenc1 asig3L, kalpha3, kbeta3
-  	aBenc3R bformenc1 asig3R, kalpha3, kbeta3
+  	mixencoded asig3L, kalpha3, kbeta3
+  	mixencoded asig3R, kalpha3, kbeta3
   	
-  	aBenc4L bformenc1 asig4L, kalpha4, kbeta4
-  	aBenc4R bformenc1 asig4R, kalpha4, kbeta4
+  	mixencoded asig4L, kalpha4, kbeta4
+  	mixencoded asig4R, kalpha4, kbeta4
   	
-  	aBenc5L bformenc1 asig5L, kalpha5, kbeta5
-  	aBenc5R bformenc1 asig5R, kalpha5, kbeta5
+  	mixencoded asig5L, kalpha5, kbeta5
+  	mixencoded asig5R, kalpha5, kbeta5
   	
-  	aBenc6L bformenc1 asig6L, kalpha6, kbeta6
-  	aBenc6R bformenc1 asig6R, kalpha6, kbeta6
+  	mixencoded asig6L, kalpha6, kbeta6
+  	mixencoded asig6R, kalpha6, kbeta6
   	
-  	aBenc7L bformenc1 asig7L, kalpha7, kbeta7
-  	aBenc7R bformenc1 asig7R, kalpha7, kbeta7
-  	  	
-  	ichncount init 0
-  		if ichncount < giNSpeakers then
-  			chnmix aBenc1L[ichncount], "benc1L"
-  			chnmix aBenc1R[ichncount], "benc1R"
-  			
-  			chnmix aBenc2L[ichncount], "benc2L"
-  			chnmix aBenc2R[ichncount], "benc2R"
-  			
-  			chnmix aBenc3L[ichncount], "benc3L"
-  			chnmix aBenc3R[ichncount], "benc3R"
-  			
-  			chnmix aBenc4L[ichncount], "benc4L"
-  			chnmix aBenc4R[ichncount], "benc4R"
-  			
-  			chnmix aBenc5L[ichncount], "benc5L"
-  			chnmix aBenc5R[ichncount], "benc5R"
-  			
-  			chnmix aBenc6L[ichncount], "benc6L"
-  			chnmix aBenc6R[ichncount], "benc6R"
-  			
-  			chnmix aBenc7L[ichncount], "benc7L"
-  			chnmix aBenc7R[ichncount], "benc7R"
-  		ichncount += 1
-  		endif
+  	mixencoded asig7L, kalpha7, kbeta7
+  	mixencoded asig7R, kalpha7, kbeta7
+  	
+  	
+  	/*mixbformat:	
+  		if ipos < giNSpeakers then
+  			mixencoded asig1L, kalpha1, kbeta1, ipos
+  			mixencoded asig1R, kalpha1, kbeta1, ipos
+  	
+  			mixencoded asig2L, kalpha2, kbeta2, ipos
+  			mixencoded asig2R, kalpha2, kbeta2, ipos
+  	
+  			mixencoded asig3L, kalpha3, kbeta3, ipos
+  			mixencoded asig3R, kalpha3, kbeta3, ipos		
+  	
+  			mixencoded asig4L, kalpha4, kbeta4, ipos
+  			mixencoded asig4R, kalpha4, kbeta4, ipos
+  	
+  			mixencoded asig5L, kalpha5, kbeta5, ipos
+  			mixencoded asig5R, kalpha5, kbeta5, ipos
+  	
+  			mixencoded asig6L, kalpha6, kbeta6, ipos
+  			mixencoded asig6R, kalpha6, kbeta6, ipos
+  	
+  			mixencoded asig7L, kalpha7, kbeta7, ipos
+  			mixencoded asig7R, kalpha7, kbeta7, ipos
+  		ipos+=1
+  		print ipos  		
+  		goto mixbformat
+  		
+  		endif*/
  endif
-		
 
 endin
 
@@ -795,7 +809,7 @@ noteoff 3, girec[0], 0
 noteoff 3, girec[1], 0 
 noteoff 3, girec[2], 0 
 noteoff 3, girec[3], 0 
-
+noteoff 1, 108, 0
 
 	amixL chnget "mixL"
 	amixR chnget "mixR"
@@ -827,20 +841,7 @@ noteoff 3, girec[3], 0
 	chnclear "verbmixL"
 	chnclear "verbmixR"
 	
-	chnclear "benc1L"
-	chnclear "benc1R"
-	chnclear "benc2L"
-	chnclear "benc2R"
-	chnclear "benc3L"
-	chnclear "benc3R"
-	chnclear "benc4L"
-	chnclear "benc4R"
-	chnclear "benc5L"
-	chnclear "benc5R"
-	chnclear "benc6L"
-	chnclear "benc6R"
-	chnclear "benc7L"
-	chnclear "benc7R"
+	
 
 endin 
 	
@@ -856,30 +857,32 @@ instr Render, 100
 	
 	if giBEncode == 1 then
 	; bformat render 
-	abform[] init giNChannels
- 
-	abform[0] = chnget:a("benc1L")
-	ab1R chnget "benc1R"
-	ab2L chnget "benc2L"
-	ab2R chnget "benc2R"
-	ab3L chnget "benc3L"
-	ab3R chnget "benc3R"
-	ab4L chnget "benc4L"
-	ab4R chnget "benc4R"
-	ab5L chnget "benc5L"
-	ab5R chnget "benc5R"
-	ab6L chnget "benc6L"
-	ab6R chnget "benc6R"
-	ab7L chnget "benc7L"
-	ab7R chnget "benc7R"
-	;abform [] fillarray ab1L, ab1R, ab2L, ab2R, ab3L, ab3R, ab4L, ab4R, ab5L, ab5R, ab6L, ab6R, ab7L, ab7R
+	abform[] init giNSpeakers
+	abform[0] = chnget:a("benc0")
+	abform[1] = chnget:a("benc1")
+	abform[2] = chnget:a("benc2")
+	abform[3] = chnget:a("benc3")
+	abform[4] = chnget:a("benc4")
+	abform[5] = chnget:a("benc5")
+	abform[6] = chnget:a("benc6")
+	abform[7] = chnget:a("benc7")
+	abform[8] = chnget:a("benc8")
 	
 	Sdir = "b_format/"
 	Sfilename strcat Sdir,Sdate
 	Sfilename strcat  Sfilename, ".wav"  
-	fout Sfilename, 24, abform ; create 24-bit .wav file in specified directory 
+	fout Sfilename, 24, abform ; create 24-bit b-encoded file in specified directory 
 	
 	endif
+	chnclear "benc0"
+	chnclear "benc1"
+	chnclear "benc2"
+	chnclear "benc3"
+	chnclear "benc4"
+	chnclear "benc5"
+	chnclear "benc6"
+	chnclear "benc7"
+	chnclear "benc8"
 endin
 </CsInstruments>
 <CsScore>
@@ -906,7 +909,7 @@ e
   <g>255</g>
   <b>255</b>
  </bgcolor>
- <bsbObject type="BSBButton" version="2">
+ <bsbObject version="2" type="BSBButton">
   <objectName>button0</objectName>
   <x>43</x>
   <y>67</y>
