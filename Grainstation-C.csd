@@ -21,6 +21,13 @@ ksmps = 32
 nchnls = 2
 0dbfs  = 1
 
+/* 
+
+Config options 
+See this video for a quick explanation 
+https://www.dropbox.com/s/im1vivrjv98isub/Grainstation-C_config.mp4?dl=0
+
+*/
 ;;Path to sound files
 Sfile1 = "sounds/Maine_Shore.aif"
 Sfile2 = "sounds/Violin_BowBounce.aif"
@@ -35,8 +42,7 @@ gSIRfile = "sounds/IR_StNicolaesChurch.wav" ; Reverb IR file
 ginput = 1 			;INPUT CHANNEL NUMBER
 
 ;;B-Format - Ambisonic encoding options
-
-giBEncode = 1 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
+giBEncode = 0 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
 giNSpeakers = 9 ;how many speakers?
 giNChannels = 14 ;how many channels of audio are we using? (recommended, not to change this!)
 
@@ -652,7 +658,6 @@ kbeta8 modinit 5, gictrl_alt8, ialtdft, 0, 720, kmorph
   ;;B-format encoding
   
   if giBEncode == 1 then
-  	ipos init 0
   	mixencoded asig1L, kalpha1, kbeta1
   	mixencoded asig1R, kalpha1, kbeta1
   	
@@ -909,7 +914,7 @@ e
   <g>255</g>
   <b>255</b>
  </bgcolor>
- <bsbObject version="2" type="BSBButton">
+ <bsbObject type="BSBButton" version="2">
   <objectName>button0</objectName>
   <x>43</x>
   <y>67</y>
