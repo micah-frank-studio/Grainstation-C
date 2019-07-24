@@ -14,9 +14,6 @@ I used it on my latest album [Quetico](https://micahfrank.bandcamp.com/album/que
 
 Watch this [demo video](https://youtu.be/BQ5MSDqFaX8) to see what it can do!
 
-See this video for a quick explanation about installation and setup
-https://www.dropbox.com/s/im1vivrjv98isub/Grainstation-C_config.mp4?dl=0
-
 <a href="https://youtu.be/BQ5MSDqFaX8" target="_blank"><img src="http://img.youtube.com/vi/BQ5MSDqFaX8/0.jpg" alt="Grainstation-C Demo" width="240" height="180" border="0" /></a>
 
 **Controller**
@@ -48,6 +45,9 @@ You can enable the ambisonics flag and immediately tweak the azimuth and altitud
 **Installation**
 
 Grainstation requires Csound: http://csound.com/download.html CsoundQT comes with Csound and will enable you to run Grainstation C.
+
+See this video for a quick explanation about installation and setup
+https://www.dropbox.com/s/im1vivrjv98isub/Grainstation-C_config.mp4?dl=0
 
 **Page Controls Overview**
 
