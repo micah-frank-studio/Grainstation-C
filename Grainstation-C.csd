@@ -42,7 +42,7 @@ gSIRfile = "sounds/IR_StNicolaesChurch.wav" ; Reverb IR file
 ginput = 1 			;INPUT CHANNEL NUMBER
 
 ;;B-Format - Ambisonic encoding options
-giBEncode = 0 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
+giBEncode = 1 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
 giNSpeakers = 9 ;how many speakers?
 giNChannels = 14 ;how many channels of audio are we using? (recommended, not to change this!)
 
@@ -104,8 +104,8 @@ gictrl_str7 = 20
 ;gictrl_str8 = 23 -  assigned to morph lfo
 ;Grain Size
 gictrl_grsize1 = 3 
-gictrl_grsize3 = 6 
-gictrl_grsize2 = 9 
+gictrl_grsize2 = 6 
+gictrl_grsize3 = 9 
 gictrl_grsize4 = 12
 gictrl_grsize5 = 15 
 gictrl_grsize6 = 18 
@@ -309,19 +309,20 @@ opcode pitchdelay, aa, aaiii ;audio in / audio out, delay time, feedback, delay 
 endop
 
 opcode mixencoded, 0, akk
-	;encoding opcode must read input stream, read azimuth and alt, encode, mix to channel 
 	ain, kalpha, kbeta xin
 	ipos init 0
 	abenc[] init giNSpeakers
 	abenc bformenc1 ain, kalpha, kbeta
 	/*mixbformat:	
-  		if ipos < giNSpeakers then
+  		if ipos = < giNSpeakers then
   		SchannelName sprintf "benc%i", ipos
 			chnmix abenc[ipos], SchannelName
 			ipos +=1
+			prints SchannelName
 			goto mixbformat
 			endif
-			*/
+		amix chnget "benc0"
+		fout "mix.wav", 24, amix*/
 	chnmix abenc[0], "benc0"
 	chnmix abenc[1], "benc1"
 	chnmix abenc[2], "benc2" 
@@ -524,9 +525,9 @@ kbeta8 modinit 5, gictrl_alt8, ialtdft, 0, 720, kmorph
 		a4L syncloop klev[3], kdens4, gkpitch[3], kgrsize4, ips*kstr4, 0, ftlen(giL[3])/sr, giL[3], 1, iolaps
 		a4R syncloop klev[3], kdens4, gkpitch[3], kgrsize4, ips*kstr4, 0, ftlen(giL[3])/sr, giR[3], 1, iolaps
 		;Live Input channels.
-		a5 syncloop klev[4], kdens4, gkpitch[4], kgrsize5, ips*kstr5, 0, gkLoopDuration[0], giRecBuf[0], 1, iolaps
-		a6 syncloop klev[5], kdens5, gkpitch[5], kgrsize6, ips*kstr6, 0, gkLoopDuration[1], giRecBuf[1], 1, iolaps		
-		a7 syncloop klev[6], kdens6, gkpitch[6], kgrsize7, ips*kstr7, 0, gkLoopDuration[2], giRecBuf[2], 1, iolaps
+		a5 syncloop klev[4], kdens5, gkpitch[4], kgrsize5, ips*kstr5, 0, gkLoopDuration[0], giRecBuf[0], 1, iolaps
+		a6 syncloop klev[5], kdens6, gkpitch[5], kgrsize6, ips*kstr6, 0, gkLoopDuration[1], giRecBuf[1], 1, iolaps		
+		a7 syncloop klev[6], kdens7, gkpitch[6], kgrsize7, ips*kstr7, 0, gkLoopDuration[2], giRecBuf[2], 1, iolaps
 		
 		;Extra Disk channels if needed
 		;a6R syncloop klev[5], kdens6, gkpitch[5], kgrsize6, ips*kstr6, 0, ftlen(giL[5])/sr, giR[5], 1, iolaps		
