@@ -16,6 +16,10 @@ Watch this [demo video](https://youtu.be/BQ5MSDqFaX8) to see what it can do!
 
 <a href="https://youtu.be/BQ5MSDqFaX8" target="_blank"><img src="http://img.youtube.com/vi/BQ5MSDqFaX8/0.jpg" alt="Grainstation-C Demo" width="240" height="180" border="0" /></a>
 
+**Questions**
+
+Please ask any questions in the issues section: https://github.com/chronopolis5k/Grainstation-C/issues
+
 **Controller**
 
 Grainstation-C has been developed to integrate with the Novation Launch Control XL Mark2. However, any other controller should work as well. The MIDI note and controller mapping schema is in the [MIDI Specification.txt](https://github.com/chronopolis5k/Grainstation-C/blob/master/MIDI%20Specification.txt) file
