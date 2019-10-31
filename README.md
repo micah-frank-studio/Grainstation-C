@@ -24,7 +24,7 @@ Please ask any questions in the issues section: https://github.com/chronopolis5k
 
 Grainstation-C has been developed to integrate with the Novation Launch Control XL Mark2. However, any other controller should work as well. The MIDI note and controller mapping schema is in the [MIDI Specification.txt](https://github.com/chronopolis5k/Grainstation-C/blob/master/MIDI%20Specification.txt) file
 
-This repository includes 4 template pages for the Novation Launch Control XL. To change pages, press [User + Track Focus 1-4] buttons
+This repository includes 4 template pages for the Novation Launch Control XL. To change pages, press [User + Track Control 1-4] buttons
 
 • Page 1 - Granular Controls - pitch, time-stretch, grain size
 
