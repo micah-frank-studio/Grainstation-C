@@ -10,10 +10,25 @@
 <CsoundSynthesizer>
 <CsOptions>
 
--Ma ;enable all MIDI devices
+;-Ma ;enable all MIDI devices
 ;-B512 -b128 ; hardware and software buffer default (-B512 -b128)
-;-iadc    ;;;uncomment -iadc if RT audio input is needed too
 ;-n -d -+rtmidi=NULL -M0 -m0d
+
+;;; Device selection
+;;; These vary from system to system, so you will have to get the right values
+;;; by causing an error. I have added these options here, as opposed to setting
+;;; things up in CsoundQT's configuration as described in the video,
+;;; because macOS 10.15 (Catalina) refuses to run CsoundQT.
+;;; MIDI device - use a high number (like 99) to cause an error and list
+;;; the connected devices, then substitute for the correct ID.
+-M1 ;;; read MIDI from device 1
+-Q1 ;;; write MIDI to device 1
+;;; Output audio device - use a high number (like 99) to cause an error
+;;; and list the connected devices, then substitute for the correct ID.
+-odac0
+;;; Input audio device - use a high number (like 99) to cause an error
+;;; and list the connected devices, then substitute for the correct ID.
+;-iadc    ;;; uncomment -iadc if RT audio input is needed too
 </CsOptions>
 <CsInstruments>
 sr = 48000
